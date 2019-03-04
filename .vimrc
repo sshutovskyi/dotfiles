@@ -27,6 +27,7 @@ Plug 'mileszs/ack.vim'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'ryanoasis/vim-devicons'
 Plug 'sheerun/vim-polyglot'
+Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sensible'
@@ -36,6 +37,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'w0rp/ale'
 Plug 'henrik/vim-qargs'
+Plug 'prettier/vim-prettier', { 'do': 'npm install', 'for': ['javascript', 'typescript'] }
 if has('nvim')
   Plug 'equalsraf/neovim-gui-shim'
   Plug 'autozimu/LanguageClient-neovim', {
@@ -185,7 +187,7 @@ let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 0
 let g:ale_open_list = 0
 let g:ale_linters_explicit = 1
-let g:ale_linters = { 'typescript': ['tslint', 'tsserver'], 'javascript': ['eslint', 'flow'], 'ruby': [], }
+let g:ale_linters = { 'typescript': ['tslint'], 'javascript': ['eslint', 'flow'], 'ruby': [], }
 
 " airline configuration
 let g:airline_powerline_fonts = 1
@@ -196,7 +198,7 @@ function! ContainerTransform(cmd) abort
     return 'vssh '.shellescape(a:cmd)
   endif
   if filereadable('docker-compose.yml')
-    return 'docker-compose run app '.shellescape(a:cmd)
+    return 'docker-compose run --rm app '.(a:cmd)
   endif
   return a:cmd
 endfunction
@@ -204,9 +206,9 @@ endfunction
 if has('nvim')
   let g:test#strategy = 'neovim'
 endif
-let test#javascript#mocha#file_pattern = '\vtests?/.*\.(ts|js|jsx|coffee)$'
 let test#javascript#mocha#executable = 'node_modules/.bin/mocha'
-let test#javascript#jest#executable = 'node_modules/.bin/jest'
+let test#javascript#mocha#file_pattern = '\vtests?/.*\.(ts|js|jsx|coffee)$'
+let test#javascript#jest#executable = 'node_modules/.bin/jest --rootDir=. --testRegex="(src/.*\.spec\.ts|test/.*\.e2e-spec\.ts)$"'
 let g:test#custom_transformations = {'container': function('ContainerTransform')}
 let g:test#transformation = 'container'
 nmap <silent> t<C-n> :TestNearest<CR> " t Ctrl+n
@@ -229,6 +231,11 @@ let g:LanguageClient_windowLogMessageLevel = 'Error'
 nnoremap <silent> d<C-s> :call LanguageClient_textDocument_hover()<CR>
 nnoremap <silent> d<C-d> :call LanguageClient_textDocument_definition()<CR>
 nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<CR>
+
+nnoremap <silent> ts<C-f> :TSGetCodeFix<CR>
+nnoremap <silent> ts<C-r> :TSRename<CR>
+nnoremap <silent> ts<C-d> :TSDef<CR>
+nnoremap <silent> ts<C-p> :TSDefPreview<CR>
 
 " let g:loaded_airline = 1
 if exists('g:GuiLoaded')

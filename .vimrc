@@ -15,7 +15,6 @@ Plug 'rhysd/committia.vim', { 'for': 'gitcommit' }
 Plug 'janko-m/vim-test'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'christoomey/vim-system-copy'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'fatih/vim-go', { 'for': 'go' }
 Plug 'flazz/vim-colorschemes'
@@ -23,7 +22,6 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/goyo.vim', { 'for': 'markdown'}
 Plug 'junegunn/limelight.vim', { 'for': 'markdown'}
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'mileszs/ack.vim'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'ryanoasis/vim-devicons'
 Plug 'sheerun/vim-polyglot'
@@ -36,26 +34,20 @@ Plug 'tpope/vim-vinegar'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'w0rp/ale'
-Plug 'henrik/vim-qargs'
-Plug 'prettier/vim-prettier', { 'do': 'npm install', 'for': ['javascript', 'typescript'] }
 if has('nvim')
-  Plug 'equalsraf/neovim-gui-shim'
   Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
     \ }
   Plug 'ncm2/ncm2'
   Plug 'ncm2/ncm2-path'
-  " Plug 'ncm2/ncm2-tagprefix'
   Plug 'ncm2/ncm2-syntax' | Plug 'Shougo/neco-syntax'
-  Plug 'ncm2/ncm2-neoinclude' | Plug 'Shougo/neoinclude.vim'
-  Plug 'HerringtonDarkholme/yats.vim'
-  Plug 'mhartington/nvim-typescript', {'do': './install.sh'}
   Plug 'roxma/nvim-yarp'
   " set root directory to detected one
   Plug 'airblade/vim-rooter'
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  Plug 'junegunn/fzf.vim'
 else
-  Plug 'valloric/youcompleteme'
 endif
 
 call plug#end()
@@ -73,6 +65,8 @@ set undodir=$HOME/.vim/undo/
 set encoding=utf8
 " No special per file vim override configs
 set nomodeline
+
+set mouse=a
 
 " display options
 set relativenumber
@@ -158,36 +152,23 @@ if has('nvim')
   " Use <TAB> to select the popup menu:
   inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
   inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-else
-  " youcompleteme config
-  nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>
-  nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
-  nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
 endif
 
-" ack
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep --smart-case'
-endif
-
-" ctrlp config
-set wildmode=list:longest,list:full
-set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__,*/node_modules/*
-let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+" fzf
+nnoremap <C-p> :Files<Cr>
+nnoremap <C-f> :Rg<Cr>
 
 " indent guides
-let g:indent_guides_start_level = 2
+let g:indent_guides_start_level = 1
 let g:indent_guides_guide_size = 1
 let g:indent_guides_enable_on_vim_startup = 1
 
 " ale configuration
-let g:ale_statusline_format = ['â¨‰ %d', 'âš  %d', 'â¬¥ ok']
 let g:ale_sign_column_always = 1
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 0
-let g:ale_open_list = 0
 let g:ale_linters_explicit = 1
 let g:ale_linters = { 'typescript': ['tslint'], 'javascript': ['eslint', 'flow'], 'ruby': [], }
+let g:ale_fixers = { 'typescript': ['tslint', 'prettier'] }
+let g:ale_fix_on_save = 1
 
 " airline configuration
 let g:airline_powerline_fonts = 1
@@ -208,7 +189,7 @@ if has('nvim')
 endif
 let test#javascript#mocha#executable = 'node_modules/.bin/mocha'
 let test#javascript#mocha#file_pattern = '\vtests?/.*\.(ts|js|jsx|coffee)$'
-let test#javascript#jest#executable = 'node_modules/.bin/jest --rootDir=. --testRegex="(src/.*\.spec\.ts|test/.*\.e2e-spec\.ts)$"'
+let test#javascript#jest#executable = 'npm test -- --rootDir=. --testRegex="(src/.*\.spec\.ts|test/.*\.e2e-spec\.ts)$"'
 let g:test#custom_transformations = {'container': function('ContainerTransform')}
 let g:test#transformation = 'container'
 nmap <silent> t<C-n> :TestNearest<CR> " t Ctrl+n
@@ -219,6 +200,7 @@ nmap <silent> t<C-g> :TestVisit<CR>   " t Ctrl+g
 
 " LanguageClient configuration
 let g:LanguageClient_serverCommands = {
+    \ 'typescript': ['/usr/local/bin/javascript-typescript-stdio'],
     \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
     \ 'javascript.jsx': ['/usr/local/bin/javascript-typescript-stdio'],
     \ 'ruby': ['/usr/local/bin/solargraph', 'stdio'],
@@ -230,14 +212,5 @@ let g:LanguageClient_windowLogMessageLevel = 'Error'
 
 nnoremap <silent> d<C-s> :call LanguageClient_textDocument_hover()<CR>
 nnoremap <silent> d<C-d> :call LanguageClient_textDocument_definition()<CR>
-nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<CR>
-
-nnoremap <silent> ts<C-f> :TSGetCodeFix<CR>
-nnoremap <silent> ts<C-r> :TSRename<CR>
-nnoremap <silent> ts<C-d> :TSDef<CR>
-nnoremap <silent> ts<C-p> :TSDefPreview<CR>
-
-" let g:loaded_airline = 1
-if exists('g:GuiLoaded')
-  GuiFont FuraCode\ NF:h14
-endif
+nnoremap <silent> d<C-r> :call LanguageClient_textDocument_rename()<CR>
+nnoremap <silent> d<C-f> :call LanguageClient_textDocument_codeAction()<CR>

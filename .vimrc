@@ -156,7 +156,7 @@ endif
 
 " fzf
 nnoremap <C-p> :Files<Cr>
-nnoremap <C-f> :Rg<Cr>
+nnoremap <C-f> :call fzf#vim#ag(expand('<cword>'))<Cr>
 
 " indent guides
 let g:indent_guides_start_level = 1

@@ -12,7 +12,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-eunuch' " helpers for UNIX
 Plug 'tpope/vim-sleuth' " autodetect indentation rules
 Plug 'rhysd/committia.vim', { 'for': 'gitcommit' }
-Plug 'janko-m/vim-test'
+Plug 'vim-test/vim-test'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'christoomey/vim-system-copy'
 Plug 'editorconfig/editorconfig-vim'
@@ -21,6 +21,7 @@ Plug 'flazz/vim-colorschemes'
 Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/goyo.vim', { 'for': 'markdown'}
 Plug 'junegunn/limelight.vim', { 'for': 'markdown'}
+Plug 'stephpy/vim-yaml'
 " Plug 'ludovicchabant/vim-gutentags'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'ryanoasis/vim-devicons'
@@ -44,6 +45,10 @@ Plug 'mileszs/ack.vim'
 Plug 'xolox/vim-notes'
 Plug 'xolox/vim-misc'
 Plug 'junegunn/vim-easy-align'
+Plug 'vimwiki/vimwiki'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
+Plug 'christianrondeau/vim-base64'
+Plug 'drewtempelmeyer/palenight.vim'
 
 call plug#end()
 filetype plugin indent on
@@ -69,14 +74,30 @@ set number
 set nowrap
 
 " only for markdown
-autocmd FileType markdown setlocal wrap
+autocmd FileType markdown setlocal wrap linebreak
+autocmd FileType markdown setlocal spell
 set showmatch      " highlight matching bracket
 set lazyredraw     " redraw only when we need to.
 set noshowmode     " don't show current mode
 set showcmd        " show current command
 
 set laststatus=2   " Always display the status line
-colorscheme Tomorrow-Night
+set background=dark
+colorscheme palenight
+let g:airline_theme = "palenight"
+if (has("nvim"))
+  "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+endif
+
+"For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+"Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+" < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+if (has("termguicolors"))
+  set termguicolors
+endif
+" Italics for my favorite color scheme
+let g:palenight_terminal_italics=1
 
 " configuration
 set tabstop=2
@@ -176,9 +197,9 @@ endfunction
 if has('nvim')
   let g:test#strategy = 'neovim'
 endif
-let test#javascript#mocha#executable = 'node_modules/.bin/mocha'
+let test#javascript#mocha#executable = 'npm test'
 " let test#javascript#mocha#file_pattern = '\vtests?/.*\.(ts|js|jsx|coffee)$'
-" let test#javascript#jest#executable = 'npm test -- --rootDir=. --testRegex="(src/.*\.spec\.ts|test/.*\.e2e-spec\.ts)$"'
+let test#javascript#jest#executable = 'npm test'
 " let g:test#custom_transformations = {'container': function('ContainerTransform')}
 " let g:test#transformation = 'container'
 nmap <silent> t<C-n> :TestNearest<CR> " t Ctrl+n
@@ -295,3 +316,9 @@ let g:lightline = {
 au FileType markdown vmap <Leader><Bslash> :EasyAlign*<Bar><Enter>
 
 let g:rooter_patterns = ['package.json', 'Makefile', '.git', '.git/']
+
+let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
+
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif

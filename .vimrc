@@ -11,39 +11,33 @@ endif
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-eunuch' " helpers for UNIX
 Plug 'tpope/vim-sleuth' " autodetect indentation rules
-Plug 'rhysd/committia.vim', { 'for': 'gitcommit' }
-Plug 'vim-test/vim-test'
-Plug 'bronson/vim-trailing-whitespace'
+Plug 'tpope/vim-repeat' " repeat plugin actions with dot
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-vinegar' " file browsing with -
+Plug 'rhysd/committia.vim', { 'for': 'gitcommit' } " better looking git commit
+Plug 'vim-test/vim-test' " run tests for different languages
+Plug 'bronson/vim-trailing-whitespace' " highlight trailing whitespaces
 Plug 'christoomey/vim-system-copy'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'fatih/vim-go', { 'for': 'go' }
 Plug 'flazz/vim-colorschemes'
 Plug 'jiangmiao/auto-pairs'
-Plug 'junegunn/goyo.vim', { 'for': 'markdown'}
-Plug 'junegunn/limelight.vim', { 'for': 'markdown'}
 Plug 'stephpy/vim-yaml'
-" Plug 'ludovicchabant/vim-gutentags'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'ryanoasis/vim-devicons'
 Plug 'sheerun/vim-polyglot'
-Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-sensible'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-vinegar'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'w0rp/ale'
-Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
+Plug 'neoclide/coc.nvim', {'tag': '*', 'do': 'yarn install'}
 Plug 'neoclide/coc-sources'
-" set root directory to detected one
-Plug 'airblade/vim-rooter'
+Plug 'airblade/vim-rooter' " set root directory to detected one
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'mileszs/ack.vim'
-Plug 'xolox/vim-notes'
-Plug 'xolox/vim-misc'
 Plug 'junegunn/vim-easy-align'
 Plug 'vimwiki/vimwiki'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
@@ -207,23 +201,6 @@ nmap <silent> t<C-f> :TestFile<CR>    " t Ctrl+f
 nmap <silent> t<C-s> :TestSuite<CR>   " t Ctrl+s
 nmap <silent> t<C-l> :TestLast<CR>    " t Ctrl+l
 nmap <silent> t<C-g> :TestVisit<CR>   " t Ctrl+g
-
-" LanguageClient configuration
-" let g:LanguageClient_serverCommands = {
-"     \ 'typescript': ['/usr/local/bin/javascript-typescript-stdio'],
-"     \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
-"     \ 'javascript.jsx': ['/usr/local/bin/javascript-typescript-stdio'],
-"     \ 'ruby': ['/usr/local/bin/solargraph', 'stdio'],
-"     \ }
-
-" Automatically start language servers.
-" let g:LanguageClient_autoStart = 1
-" let g:LanguageClient_windowLogMessageLevel = 'Error'
-
-" nnoremap <silent> d<C-s> :call LanguageClient_textDocument_hover()<CR>
-" nnoremap <silent> d<C-d> :call LanguageClient_textDocument_definition()<CR>
-" nnoremap <silent> d<C-r> :call LanguageClient_textDocument_rename()<CR>
-" nnoremap <silent> d<C-f> :call LanguageClient_textDocument_codeAction()<CR>
 
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.

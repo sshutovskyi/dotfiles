@@ -30,18 +30,29 @@ require('packer').startup(function()
   use 'airblade/vim-rooter'
   use 'nvim-treesitter/nvim-treesitter'
   -- UI to select things (files, grep results, open buffers...)
-  use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}} }
-  use 'joshdick/onedark.vim'         -- Theme inspired by Atom
+  use { 'nvim-telescope/telescope.nvim', requires = { { 'nvim-lua/popup.nvim' }, { 'nvim-lua/plenary.nvim' } } }
+  -- use 'joshdick/onedark.vim'         -- Theme inspired by Atom
   use 'itchyny/lightline.vim'        -- Fancier statusline
   -- Add indentation guides even on blank lines
-  use { 'lukas-reineke/indent-blankline.nvim', branch="lua" }
+  use 'lukas-reineke/indent-blankline.nvim'
   -- Add git related info in the signs columns and popups
-  use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'} }
+  use { 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
   use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
   use 'williamboman/nvim-lsp-installer'
   use 'hrsh7th/nvim-compe'           -- Autocompletion plugin
   use 'jiangmiao/auto-pairs'
-  use { "rcarriga/vim-ultest", requires = {"vim-test/vim-test"}, run = ":UpdateRemotePlugins" }
+  -- use { "rcarriga/vim-ultest", requires = {"vim-test/vim-test"}, run = ":UpdateRemotePlugins" }
+  use 'sbdchd/neoformat' 	     -- Autoformatting plugin
+  use 'folke/tokyonight.nvim'
+  -- clipboard management
+  use {
+    "AckslD/nvim-neoclip.lua",
+    config = function()
+        require('neoclip').setup()
+    end,
+  }
+  use 'puremourning/vimspector'
+  use 'hashivim/vim-terraform'
 end)
 
 --Incremental live completion
@@ -77,13 +88,18 @@ vim.wo.signcolumn="yes"
 
 --Set colorscheme (order is important here)
 vim.o.termguicolors = true
-vim.g.onedark_terminal_italics = 2
-vim.cmd[[colorscheme onedark]]
+-- vim.g.onedark_terminal_italics = 2
+vim.cmd[[colorscheme tokyonight]]
+
+vim.g.tokyonight_style = "storm"
+
+-- vim.g.tokyonight_style = "day"
+-- vim.o.background = "light"
 
 vim.cmd[[set colorcolumn=80,120]] -- show ruler on columns 80 and 120
 
 --Set statusbar
-vim.g.lightline = { colorscheme = 'onedark';
+vim.g.lightline = { colorscheme = 'tokyonight';
       active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
       component_function = { gitbranch = 'fugitive#head', };
 }
@@ -152,8 +168,10 @@ require('telescope').setup {
 }
 --Add telescope shortcuts
 vim.api.nvim_set_keymap('n', '<C-p>', [[<cmd>lua require('telescope.builtin').git_files()<cr>]], { noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<C-g>', [[<cmd>lua require('telescope.builtin').grep_string()<cr>]], { noremap = true, silent = true})
+-- vim.api.nvim_set_keymap('n', '<C-g>', [[<cmd>lua require('telescope.builtin').grep_string()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<C-f>', [[<cmd>lua require('telescope.builtin').live_grep()<cr>]], { noremap = true, silent = true})
+-- vim.api.nvim_set_keymap('n', '<C-h>', [[<cmd>lua require('telescope.builtin').lsp_workspace_symbols()<cr>]], { noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', '<C-h>', [[<cmd>lua require('telescope').extensions.neoclip.default()<cr>]], { noremap = true, silent = true})
 
 -- Change preview window location
 vim.g.splitbelow = true
@@ -193,7 +211,7 @@ local on_attach = function(_client, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
 end
 
-local servers = { "gopls", "tsserver" }
+local servers = { "gopls", "tsserver", "terraformls", "yamlls", "dockerls" }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end
@@ -306,3 +324,13 @@ vim.api.nvim_set_keymap('n', 't<C-s>', ':TestSuite<CR>', {silent= true})
 vim.api.nvim_set_keymap('n', 't<C-l>', ':TestLast<CR>', {silent= true})
 
 vim.cmd([[let g:test#strategy = 'neovim']])
+vim.cmd([[let g:rooter_patterns = ['package.json', '.git', 'Makefile'] ]])
+
+require'nvim-treesitter.configs'.setup {
+	ensure_installed = { "javascript", "typescript", "go", "dockerfile", "json", "yaml" },
+	highlight = {
+		enable = true
+	}
+}
+vim.cmd([[set foldmethod=expr]])
+vim.cmd([[set foldexpr=nvim_treesitter#foldexpr()]])

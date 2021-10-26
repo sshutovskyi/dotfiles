@@ -55,6 +55,14 @@ require('packer').startup(function()
   use 'hashivim/vim-terraform'
 end)
 
+-- On pressing tab, insert 2 spaces
+vim.cmd[[set expandtab]]
+-- show existing tab with 2 spaces width
+vim.cmd[[set tabstop=2]]
+vim.cmd[[set softtabstop=2]]
+-- when indenting with '>', use 2 spaces width
+vim.cmd[[set shiftwidth=2]]
+
 --Incremental live completion
 vim.o.inccommand = "nosplit"
 
